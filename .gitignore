@@ -1,0 +1,16 @@
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+#sqlite
+db.sqlite3
+
+.env
+media
+.vscode/tags
+venv/
+.idea/
+.vscode
+migrations/
+staticfiles/
