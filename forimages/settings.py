@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,8 +38,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
     'image',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth.registration',
+    'rest_auth',
+    'users',
+    'api',
+    'django_extensions',
+
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -71,17 +83,67 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'forimages.wsgi.application'
 
+REST_FRAMEWORK = {
+     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'users.authentication.MyOwnTokenAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'EXCEPTION_HANDLER': 'api.utils.custom_exception_handler',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.UserRegistrationSerializer',
+    'LOGIN_SERIALIZER': 'users.serializers.LoginSerializer',
+}
+
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+ACCOUNT_ADAPTER = 'users.all_auth_adapter.MyAccountAdapter'
+
+# Account Settings
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 10
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'spyscreenshot',
+#         'USER': 'kbinod',
+#         'PASSWORD': 'kafle123',
+#         'HOST': 'py-kbinod-rds.cjs273oaimfx.ap-south-1.rds.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -101,6 +163,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#EMAIL_CONFIGURATION
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '216461c599411a'
+EMAIL_HOST_PASSWORD = '301c2c38a6169a'
+EMAIL_PORT = '2525'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.conso le.EmailBackend'
+
+FRONTEND_HOST = config('FRONTEND_HOST')
+
+# Codes for success and failure
+ERROR_CODE = 0
+SUCCESS_CODE = 1
+NO_DATA_CODE = 2
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
