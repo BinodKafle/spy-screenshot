@@ -17,7 +17,15 @@ from django.contrib import admin
 from django.urls import include, path
 from image import views
 
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='SpyScreenshot API')
+
 urlpatterns = [
+    path('', schema_view),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('accounts/', include('allauth.account.urls')),
+
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
     path('api/v1/', include('users.urls')),
